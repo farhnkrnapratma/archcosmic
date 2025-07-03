@@ -1,18 +1,19 @@
 ```
-# FArchCOS
-  My Arch Linux COSMIC setup script. The all in one Arch-COSMIC setup solution.
+FArchCOS
+
+My Arch Linux COSMIC setup script. The all in one Arch-COSMIC setup solution.
+This setup script is effective for COSMIC version Alpha 7.
 
 # Requirements
-  1. git - version control system
+  - git
     $ sudo pacman -S git
-  2. yay - aur helper
+  - yay
     $ sudo pacman -S git base-devel
     $ git clone https://aur.archlinux.org/yay.git
     $ cd yay
     $ makepkg -si
 
 # Installation
-  Follow these steps:
     $ git clone https://github.com/farhnkrnapratma/farchcos.git
     $ cd farchcos
     $ chmod +x install.sh
@@ -20,7 +21,6 @@
 
 # Enable Chaotic-AUR (optional) [per 04/07/2025 00:41 GMT+7]
   Home: https://aur.chaotic.cx/
-  Follow these steps:
     $ sudo pacman-key --recv-key 3056513887B78AEB --keyserver keyserver.ubuntu.com
     $ sudo pacman-key --lsign-key 3056513887B78AEB
     $ sudo pacman -U 'https://cdn-mirror.chaotic.cx/chaotic-aur/chaotic-keyring.pkg.tar.zst'
