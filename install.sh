@@ -7,7 +7,7 @@ elog() {
 }
 
 done() {
-  eleog "Done."
+  elog "Done."
 }
 
 ID=$(grep '^ID=' /etc/os-release | cut -d= -f2 | tr -d '"')
