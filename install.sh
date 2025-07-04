@@ -1,12 +1,12 @@
 #!/bin/sh
 
-flog=$(tee -a /home/$USER/.farchcos_mylog)
+flog="tee -a /home/$USER/.farchcos_mylog"
 
 elog() {
-  echo "[$USER:$(date +'%H:%M:%S')] $1" | $flog
+  echo "[$USER@$(date +'%H:%M:%S')] $1" | $flog
 }
 
-done() {
+ldone() {
   elog "Done."
 }
 
@@ -27,51 +27,50 @@ echo "┃╭━━┫╭━╮┃╱╱╱╱┃┃╱┃╭━╮┃╭━╮�
 echo "┃╰━━┫┃╱┃┣━┳━━┫╰━┫┃╱╰┫┃╱┃┃╰━━╮"
 echo "┃╭━━┫╰━╯┃╭┫╭━┫╭╮┃┃╱╭┫┃╱┃┣━━╮┃"
 echo "┃┃╱╱┃╭━╮┃┃┃╰━┫┃┃┃╰━╯┃╰━╯┃╰━╯┃"
-echo "╰╯╱╱╰╯╱╰┻╯╰━━┻╯╰┻━━━┻━━━┻━━━╯\n"
-echo "Arch Linux with COSMIC Epoch 1 (alpha 7)\n"
+echo -e "╰╯╱╱╰╯╱╰┻╯╰━━┻╯╰┻━━━┻━━━┻━━━╯\n"
+echo -e "Arch Linux with COSMIC Epoch 1 (alpha 7)\n"
 
 CheckReqs() {
   elog "Checking required packages..."
-  which git
+  which git >/dev/null 2>&1 
   if [ $? -eq 1 ]; then
     elog "The required package 'git' is not installed."
     elog "Installing..."
-    sudo pacman -S git --noconfirm 2>&1 | $flog
-    done
+    yay -S git --noconfirm 2>&1 | $flog
+    ldone
   else
     elog "The required package 'git' is installed."
   fi
-  which base-devel
-  if [ $? -eq 1 ]; then
+  if pacman -Qqg base-devel >/dev/null 2>&1 && pacman -Qqg base-devel | pacman -Qq >/dev/null 2>&1; then
     elog "The required package 'base-devel' is not installed."
     elog "Installing..."
-    sudo pacman -S base-devel --noconfirm 2>&1 | $flog
-    done
+    yay -S base-devel --noconfirm 2>&1 | $flog
+    ldone
   else
     elog "The required package 'base-devel' is installed."
   fi
-  which yay
+  which yay >/dev/null 2>&1   
   if [ $? -eq 1 ]; then
     elog "The required package 'yay' is not installed."
     elog "Installing..."
-    git clone https://aur.archlinux.org/yay.git 2>&1 | flog
+git clone https://aur.archlinux.org/yay.git 2>&1 | $flog
     cd yay
-    makepkg -si 2>&1 | $flog
-    done
+makepkg -si --noconfirm 2>&1 | $flog
+    ldone
   else
     elog "The required package 'yay' is installed."
   fi
   elog "All required packages are installed."
-  done
+  ldone
 }
 
 SetupCOSMIC() {
   elog "Updating software repositories index."
-  sudo pacman -Sy
-  done
+  yay -Syy 2>&1 | $flog
+  ldone
   CheckReqs
   elog "Installing COSMIC"
-  done
+  ldone
 }
 
 printf "Continue the installation? [Y/n]: "
@@ -83,7 +82,6 @@ case "$ans" in
   [Yy]*)
     elog "Installing..."
     SetupCOSMIC
-    done
     exit 0
     ;;
   *)
