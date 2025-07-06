@@ -3,7 +3,7 @@
 flog="tee -a /home/$USER/.farchcos_mylog"
 
 elog() {
-  echo "[$USER@$(date +'%H:%M:%S')] $1" | $flog
+  echo -e "[$USER@$(date +'%H:%M:%S')] $1" | $flog
 }
 
 ldone() {
@@ -22,13 +22,14 @@ if [ $? -eq 1 ]; then
   exit 1
 fi
 
-echo "╭━━━┳━━━╮╱╱╱╱╭╮╱╭━━━┳━━━┳━━━╮"
-echo "┃╭━━┫╭━╮┃╱╱╱╱┃┃╱┃╭━╮┃╭━╮┃╭━╮┃"
-echo "┃╰━━┫┃╱┃┣━┳━━┫╰━┫┃╱╰┫┃╱┃┃╰━━╮"
-echo "┃╭━━┫╰━╯┃╭┫╭━┫╭╮┃┃╱╭┫┃╱┃┣━━╮┃"
-echo "┃┃╱╱┃╭━╮┃┃┃╰━┫┃┃┃╰━╯┃╰━╯┃╰━╯┃"
-echo -e "╰╯╱╱╰╯╱╰┻╯╰━━┻╯╰┻━━━┻━━━┻━━━╯\n"
-echo -e "Arch Linux with COSMIC Epoch 1 (alpha 7)\n"
+elog "╭━━━┳━━━╮╱╱╱╱╭╮╱╭━━━┳━━━┳━━━╮"
+elog "┃╭━━┫╭━╮┃╱╱╱╱┃┃╱┃╭━╮┃╭━╮┃╭━╮┃"
+elog "┃╰━━┫┃╱┃┣━┳━━┫╰━┫┃╱╰┫┃╱┃┃╰━━╮"
+elog "┃╭━━┫╰━╯┃╭┫╭━┫╭╮┃┃╱╭┫┃╱┃┣━━╮┃"
+elog "┃┃╱╱┃╭━╮┃┃┃╰━┫┃┃┃╰━╯┃╰━╯┃╰━╯┃"
+elog "╰╯╱╱╰╯╱╰┻╯╰━━┻╯╰┻━━━┻━━━┻━━━╯\n"
+elog "Arch Linux with COSMIC Epoch 1 (alpha 7)"
+elog "Log: /home/$USER/.farchcos_mylog\n"
 
 CheckReqs() {
   elog "Checking required packages..."
