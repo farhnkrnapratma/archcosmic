@@ -1,9 +1,23 @@
 #!/bin/sh
 
+trap 'echo "An error occurred on line $LINENO"; exit 1' ERR
+set -e
+
 flog="tee -a /home/$USER/.farchcos_mylog"
 
+echo -e "[$(date '+%Y-%m-%d %H:%M:%S %Z') | $USER@$HOSTNAME | $SHELL | $PWD]\n"
+
 elog() {
-  echo -e "[$USER@$(date +'%H:%M:%S')] $1" | $flog
+  echo -e "[$(date +'%H:%M:%S')] $1" | $flog
+}
+
+noreq() {
+  elog "The requirement of ‘$1’ is not met."
+  elog "Resolving..."
+}
+
+avreq() {
+  elog "The requirement of ‘$1’ is met."
 }
 
 ldone() {
@@ -32,57 +46,126 @@ elog "Arch Linux with COSMIC Epoch 1 (alpha 7)"
 elog "Log: /home/$USER/.farchcos_mylog\n"
 
 CheckReqs() {
-  elog "Checking required packages..."
+  elog "Checking all requirements..."
+
   which git >/dev/null 2>&1 
   if [ $? -eq 1 ]; then
-    elog "The required package 'git' is not installed."
-    elog "Installing..."
-    yay -S git --noconfirm 2>&1 | $flog
+    noreq "git"
+    sudo pacman -S git --noconfirm 2>&1 | $flog
     ldone
   else
-    elog "The required package 'git' is installed."
+    avreq "git"
   fi
+
   if pacman -Qqg base-devel >/dev/null 2>&1 && pacman -Qqg base-devel | pacman -Qq >/dev/null 2>&1; then
-    elog "The required package 'base-devel' is not installed."
-    elog "Installing..."
-    yay -S base-devel --noconfirm 2>&1 | $flog
+    noreq "base-devel"
+    sudo pacman -S base-devel --noconfirm 2>&1 | $flog
     ldone
   else
-    elog "The required package 'base-devel' is installed."
+    avreq "base-devel"
   fi
+
   which yay >/dev/null 2>&1   
   if [ $? -eq 1 ]; then
-    elog "The required package 'yay' is not installed."
-    elog "Installing..."
-git clone https://aur.archlinux.org/yay.git 2>&1 | $flog
-    cd yay
-makepkg -si --noconfirm 2>&1 | $flog
+    noreq "yay"
+    git clone https://aur.archlinux.org/yay.git 2>&1 | $flog
+    cd yay || exit
+    makepkg -si --noconfirm 2>&1 | $flog
     ldone
   else
-    elog "The required package 'yay' is installed."
+    avreq "yay"
   fi
-  elog "All required packages are installed."
+
+  if grep "^\[chaotic-aur\]" /etc/pacman.conf >/dev/null 2>&1; then
+    avreq "chaotic-aur"
+  else
+    noreq "chaotic-aur"
+    sudo pacman-key --recv-key 3056513887B78AEB --keyserver keyserver.ubuntu.com | $flog
+    sudo pacman-key --lsign-key 3056513887B78AEB | $flog
+    sudo pacman -U 'https://cdn-mirror.chaotic.cx/chaotic-aur/chaotic-keyring.pkg.tar.zst' | $flog
+    sudo pacman -U 'https://cdn-mirror.chaotic.cx/chaotic-aur/chaotic-mirrorlist.pkg.tar.zst' | $flog
+    echo -e "[chaotic-aur]\nInclude = /etc/pacman.d/chaotic-mirrorlist" | sudo tee -a /etc/pacman.conf
+    echo -e "[chaotic-aur]\nInclude = /etc/pacman.d/chaotic-mirrorlist" | $flog
+    yay -Syu | $flog
+    ldone
+  fi
+
+  elog "All requirements are met."
+}
+
+InstallCOSMIC() {
+  CheckReqs
+
+  elog "Installing COSMIC..."
+  yay -S chaotic-aur/cosmic-app-library-git \
+    chaotic-aur/cosmic-applets-git \
+    chaotic-aur/cosmic-bg-git \
+    chaotic-aur/cosmic-comp-git \
+    chaotic-aur/cosmic-edit-git \
+    chaotic-aur/cosmic-files-git \
+    chaotic-aur/cosmic-greeter-git \
+    chaotic-aur/cosmic-icons-git \
+    chaotic-aur/cosmic-idle-git \
+    chaotic-aur/cosmic-launcher-git \
+    chaotic-aur/cosmic-notifications-git \
+    chaotic-aur/cosmic-osd-git \
+    chaotic-aur/cosmic-panel-git \
+    chaotic-aur/cosmic-player-git \
+    chaotic-aur/cosmic-randr-git \
+    chaotic-aur/cosmic-screenshot-git \
+    chaotic-aur/cosmic-session-git \
+    chaotic-aur/cosmic-settings-daemon-git \
+    chaotic-aur/cosmic-settings-git \
+    chaotic-aur/cosmic-store-git \
+    chaotic-aur/cosmic-term-git \
+    chaotic-aur/cosmic-wallpapers-git \
+    chaotic-aur/cosmic-workspaces-git \
+    extra/power-profiles-daemon \
+    extra/bluez \
+    extra/bluez-utils | $flog
+  ldone
+
+  elog "Activating services..."
+  sudo systemctl status power-profiles-daemon | $flog
+  sudo systemctl enable power-profiles-daemon | $flog
+  sudo systemctl start power-profiles-daemon | $flog
+
+  sudo systemctl status bluetooth | $flog
+  sudo systemctl enable bluetooth | $flog
+  sudo systemctl start bluetooth | $flog
+  
+  sudo systemctl status cosmic-greeter | $flog
+  sudo systemctl enable cosmic-greeter | $flog
   ldone
 }
 
-SetupCOSMIC() {
-  elog "Updating software repositories index."
-  yay -Syy 2>&1 | $flog
-  ldone
-  CheckReqs
-  elog "Installing COSMIC"
-  ldone
+RebootOpts() {
+  printf "COSMIC successfully installed. Reboot now? [Y/n]: "
+  read -r ans
+
+  [ -z "$ans" ] && ans=Y
+
+  case "$ans" in
+    [Yy]*)
+      reboot
+      ;;
+    *)
+      elog "Exiting..."
+      exit 0
+      ;;
+  esac
 }
 
 printf "Continue the installation? [Y/n]: "
-read ans
+read -r ans
 
 [ -z "$ans" ] && ans=Y
 
 case "$ans" in
   [Yy]*)
     elog "Installing..."
-    SetupCOSMIC
+    InstallCOSMIC
+    RebootOpts
     exit 0
     ;;
   *)
