@@ -28,5 +28,7 @@ for Arch Linux and its derivatives.
   Report the issue by opening a pull request or send me an email to
   farhnkrnapratma@protonmail.com
 
+-----------------------------------------------------------------------------
+
 Copyright 2025 Farhan Kurnia Pratama <farhnkrnapratma@protonmail.com>
 ```
