@@ -1,11 +1,8 @@
 #!/bin/sh
 
-trap 'echo "An error occurred on line $LINENO"; exit 1' ERR
-set -e
-
 flog="tee -a /home/$USER/.farchcos_mylog"
 
-echo -e "[$(date '+%Y-%m-%d %H:%M:%S %Z') | $USER@$HOSTNAME | $SHELL | $PWD]\n"
+echo -e "[$(date '+%F %T %z') | $USER@$HOSTNAME | $SHELL | $PWD]\n" | $flog
 
 elog() {
   echo -e "[$(date +'%H:%M:%S')] $1" | $flog
@@ -36,14 +33,26 @@ if [ $? -eq 1 ]; then
   exit 1
 fi
 
-elog "╭━━━┳━━━╮╱╱╱╱╭╮╱╭━━━┳━━━┳━━━╮"
-elog "┃╭━━┫╭━╮┃╱╱╱╱┃┃╱┃╭━╮┃╭━╮┃╭━╮┃"
-elog "┃╰━━┫┃╱┃┣━┳━━┫╰━┫┃╱╰┫┃╱┃┃╰━━╮"
-elog "┃╭━━┫╰━╯┃╭┫╭━┫╭╮┃┃╱╭┫┃╱┃┣━━╮┃"
-elog "┃┃╱╱┃╭━╮┃┃┃╰━┫┃┃┃╰━╯┃╰━╯┃╰━╯┃"
-elog "╰╯╱╱╰╯╱╰┻╯╰━━┻╯╰┻━━━┻━━━┻━━━╯\n"
-elog "Arch Linux with COSMIC Epoch 1 (alpha 7)"
-elog "Log: /home/$USER/.farchcos_mylog\n"
+if [ -z "$1" ]; then
+  repo_type="Chaotic-AUR"
+  func_name=COSMICFromCAUR
+elif [ "$1" = "--arch" ]; then
+  repo_type="Arch Linux"
+  func_name=COSMICFromArch
+else
+  elog "Unknown argument: $1"
+  elog "Aborted."
+  exit 1
+fi
+
+elog "Arch Linux with COSMIC Desktop Environment [$repo_type]"
+elog "Homepage  : https://system76.com/cosmic"
+elog "GitHub    : https://github.com/pop-os/cosmic-epoch\n"
+elog "Note      : All COSMIC desktop environment packages are installed from the Chaotic-AUR repository."
+elog "            If you want to use the official version from the Arch Linux repository, please add"
+elog "            the '--arch' argument before running the installation script."
+elog "            Example: $ ./install.sh --arch\n"
+elog "Log       : $HOME/.farchcos_mylog\n"
 
 CheckReqs() {
   elog "Checking all requirements..."
@@ -51,7 +60,7 @@ CheckReqs() {
   which git >/dev/null 2>&1 
   if [ $? -eq 1 ]; then
     noreq "git"
-    sudo pacman -S git --noconfirm 2>&1 | $flog
+    sudo pacman -S git --noconfirm | $flog
     ldone
   else
     avreq "git"
@@ -59,7 +68,7 @@ CheckReqs() {
 
   if pacman -Qqg base-devel >/dev/null 2>&1 && pacman -Qqg base-devel | pacman -Qq >/dev/null 2>&1; then
     noreq "base-devel"
-    sudo pacman -S base-devel --noconfirm 2>&1 | $flog
+    sudo pacman -S base-devel --noconfirm | $flog
     ldone
   else
     avreq "base-devel"
@@ -68,9 +77,9 @@ CheckReqs() {
   which yay >/dev/null 2>&1   
   if [ $? -eq 1 ]; then
     noreq "yay"
-    git clone https://aur.archlinux.org/yay.git 2>&1 | $flog
+    git clone https://aur.archlinux.org/yay.git | $flog
     cd yay || exit
-    makepkg -si --noconfirm 2>&1 | $flog
+    makepkg -si --noconfirm | $flog
     ldone
   else
     avreq "yay"
@@ -93,11 +102,49 @@ CheckReqs() {
   elog "All requirements are met."
 }
 
-InstallCOSMIC() {
-  CheckReqs
+servd() {
+  elog "Checking service: $1"
+  if ! systemctl is-active "$1"; then
+    elog "Inactive. Activating service: $1"
+    sudo systemctl enable "$1" | $flog
+    printf "Start service '%s' now? [y/N]: " "$1" | $flog
+    read -r ans
 
-  elog "Installing COSMIC..."
-  yay -S chaotic-aur/cosmic-app-library-git \
+    case "$ans" in
+      [Nn]*)
+        elog "[$ans] Continue..."
+        ;;
+      [Yy]*|*)
+        elog "[$ans] Starting service: $1"
+        sudo systemctl start "$1"
+        ;;
+    esac
+  else
+    elog "Service '$1' is already active."
+  fi
+  ldone
+}
+
+RebootOpts() {
+  printf "COSMIC successfully installed. Reboot now? [Y/n]: " | $flog
+  read -r ans
+
+  [ -z "$ans" ] && ans=Y
+
+  case "$ans" in
+    [Yy]*)
+      reboot
+      ;;
+    *)
+      exit 0
+      ;;
+  esac
+}
+
+COSMICFromCAUR() {
+  elog "Installing COSMIC packages from Chaotic-AUR repository..."
+  yay -S \
+    chaotic-aur/cosmic-app-library-git \
     chaotic-aur/cosmic-applets-git \
     chaotic-aur/cosmic-bg-git \
     chaotic-aur/cosmic-comp-git \
@@ -120,51 +167,58 @@ InstallCOSMIC() {
     chaotic-aur/cosmic-term-git \
     chaotic-aur/cosmic-wallpapers-git \
     chaotic-aur/cosmic-workspaces-git \
+    chaotic-aur/xdg-desktop-portal-cosmic \
     extra/power-profiles-daemon \
     extra/bluez \
     extra/bluez-utils | $flog
   ldone
+}
 
-  elog "Activating services..."
-  sudo systemctl status power-profiles-daemon | $flog
-  sudo systemctl enable power-profiles-daemon | $flog
-  sudo systemctl start power-profiles-daemon | $flog
-
-  sudo systemctl status bluetooth | $flog
-  sudo systemctl enable bluetooth | $flog
-  sudo systemctl start bluetooth | $flog
-  
-  sudo systemctl status cosmic-greeter | $flog
-  sudo systemctl enable cosmic-greeter | $flog
+COSMICFromArch() {
+  elog "Installing COSMIC packages from Arch Linux repository..."
+  yay -S \
+    extra/cosmic-app-library \
+    extra/cosmic-applets \
+    extra/cosmic-bg \
+    extra/cosmic-comp \
+    extra/cosmic-files \
+    extra/cosmic-greeter \
+    extra/cosmic-icon-theme \
+    extra/cosmic-idle \
+    extra/cosmic-launcher \
+    extra/cosmic-notifications \
+    extra/cosmic-osd \
+    extra/cosmic-panel \
+    extra/cosmic-player \
+    extra/cosmic-randr \
+    extra/cosmic-screenshot \
+    extra/cosmic-session \
+    extra/cosmic-settings \
+    extra/cosmic-settings-daemon \
+    extra/cosmic-store \
+    extra/cosmic-terminal \
+    extra/cosmic-text-editor \
+    extra/cosmic-wallpapers \
+    extra/cosmic-workspaces \
+    extra/xdg-desktop-portal-cosmic \
+    extra/power-profiles-daemon \
+    extra/bluez \
+    extra/bluez-utils | $flog
   ldone
 }
 
-RebootOpts() {
-  printf "COSMIC successfully installed. Reboot now? [Y/n]: "
-  read -r ans
-
-  [ -z "$ans" ] && ans=Y
-
-  case "$ans" in
-    [Yy]*)
-      reboot
-      ;;
-    *)
-      elog "Exiting..."
-      exit 0
-      ;;
-  esac
-}
-
-printf "Continue the installation? [Y/n]: "
+printf "Continue the installation? [Y/n]: " | $flog
 read -r ans
 
 [ -z "$ans" ] && ans=Y
 
 case "$ans" in
   [Yy]*)
-    elog "Installing..."
-    InstallCOSMIC
+    CheckReqs
+    $func_name
+    servd "power-profiles-daemon"
+    servd "bluetooth"
+    servd "cosmic-greeter"
     RebootOpts
     exit 0
     ;;

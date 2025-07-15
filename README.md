@@ -1,7 +1,8 @@
 ```
 FArchCOS
 
-Setup script for installing COSMIC Desktop Environment from System76 for Arch Linux and its derivatives.
+Setup script for installing COSMIC Desktop Environment from System76 for
+Arch Linux and its derivatives.
 
 # Requirements
   - git
@@ -14,6 +15,14 @@ Setup script for installing COSMIC Desktop Environment from System76 for Arch Li
   $ cd farchcos
   $ chmod +x install.sh
   $ ./install.sh
+
+# Note
+  All COSMIC desktop environment packages are installed from the Chaotic-AUR
+  repository. If you want to use the official version from the Arch Linux
+  repository, please add the '--arch' argument before running the installation
+  script.
+  
+  Example: $ ./install.sh --arch
 
 # Report Problems
   Report the issue by opening a pull request or send the issue details to farhnkrnapratma@protonmail.com
