@@ -1,8 +1,8 @@
 ```
 FArchCOS
 
-Setup script for installing COSMIC Desktop Environment from System76 for
-Arch Linux and its derivatives.
+Setup script for installing COSMIC Desktop Environment from System76
+for Arch Linux and its derivatives.
 
 # Requirements
   - git
@@ -25,7 +25,8 @@ Arch Linux and its derivatives.
   Example: $ ./install.sh --arch
 
 # Report Problems
-  Report the issue by opening a pull request or send the issue details to farhnkrnapratma@protonmail.com
+  Report the issue by opening a pull request or send me an email to
+  farhnkrnapratma@protonmail.com
 
 Copyright 2025 Farhan Kurnia Pratama <farhnkrnapratma@protonmail.com>
 ```
