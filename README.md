@@ -11,8 +11,8 @@ environment on Arch Linux and its derivatives.
   - chaotic-aur
 
 # How To Get Started
-  $ git clone https://github.com/farhnkrnapratma/farchcos.git
-  $ cd farchcos
+  $ git clone https://github.com/farhnkrnapratma/archcosmic.git
+  $ cd archcosmic
   $ chmod +x install.sh
   $ ./install.sh
 
