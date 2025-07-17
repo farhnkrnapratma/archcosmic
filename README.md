@@ -1,8 +1,8 @@
 ```
-FArchCOS
+ArchCOSMIC
 
-Setup script for installing COSMIC Desktop Environment from System76
-for Arch Linux and its derivatives.
+This is a script to automate the installation process of the COSMIC desktop
+environment on Arch Linux and its derivatives.
 
 # Requirements
   - git
