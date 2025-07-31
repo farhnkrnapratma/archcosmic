@@ -28,13 +28,13 @@ script.
 Run the following in your terminal, then follow the onscreen instructions.
 
 ```bash
-$ curl --proto '=https' --tlsv1.2 -sSf https://raw.githubusercontent.com/farhnkrnapratma/archcosmic/main/install-<version>.sh | sh
+$ curl --proto '=https' --tlsv1.2 -sSf https://raw.githubusercontent.com/farhnkrnapratma/archcosmic/main/install.sh | sh
 ```
 
 Or if you want to use the official version from the Arch Linux repo:
 
 ```bash
-$ curl --proto '=https' --tlsv1.2 -sSf https://raw.githubusercontent.com/farhnkrnapratma/archcosmic/main/install-<version>.sh | sh -s -- --arch
+$ curl --proto '=https' --tlsv1.2 -sSf https://raw.githubusercontent.com/farhnkrnapratma/archcosmic/main/install.sh | sh -s -- --arch
 ```
 
 ### 2. 📋 Manual Installation
@@ -56,19 +56,19 @@ $ cd archcosmic
 - Verify using `sha512sum`
 
 ```bash
-$ sha512sum -c install-<version>.sh.sha512
+$ sha512sum -c install.sh.sha512
 ```
 
 If valid, you should see this:
 
 ```bash
-install-v1.1.sh: OK
+install.sh: OK
 ```
 
 - Verify using `gpg`
 
 ```bash
-$ gpg --verify install-<version>.sh.sig install-<version>.sh
+$ gpg --verify install.sh.sig install.sh
 ```
 
 If it is valid and the public key matches, you should see this:
@@ -82,14 +82,14 @@ gpg: Good signature from "Farhan Kurnia Pratama (Farhan Kurnia Pratama PGP Key) 
 5. Add execution permission for the script
 
 ```bash
-$ chmod +x install-<version>.sh
+$ chmod +x install.sh
 ```
 
 5. Then, run the script and relax until the process is complete ☕
 
 ```bash
-$ ./install-<version>.sh
-# or ./install-<version>.sh --arch
+$ ./install.sh
+# or ./install.sh --arch
 ```
 
 ## 🤔 What is Chaotic-AUR?
