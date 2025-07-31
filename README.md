@@ -61,5 +61,4 @@ Chaotic-AUR is an automated build repository for AUR packages.
 
 ## 🐞 Report Problems
 
-  Report the issue by opening a pull request or send me an email to
-  [farhnkrnapratma@protonmail.com](farhnkrnapratma@protonmail.com)
+Report the issue by opening a pull request or send me an email to [farhnkrnapratma@protonmail.com](farhnkrnapratma@protonmail.com)
