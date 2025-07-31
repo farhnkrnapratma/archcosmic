@@ -1,11 +1,11 @@
 #!/bin/sh
 
-flog="tee -a /home/$USER/.farchcos_mylog"
+flog="tee -a /home/$USER/.archcosmic"
 
 echo -e "[$(date '+%F %T %z') | $USER@$HOSTNAME | $SHELL | $PWD]\n" | $flog
 
 elog() {
-  echo -e "[$(date +'%H:%M:%S')] $1" | $flog
+  echo -e "[$(date '+%H:%M:%S')] $1" | $flog
 }
 
 noreq() {
@@ -52,7 +52,7 @@ elog "Note      : All COSMIC desktop environment packages are installed from the
 elog "            If you want to use the official version from the Arch Linux repository, please add"
 elog "            the '--arch' argument before running the installation script."
 elog "            Example: $ ./install.sh --arch\n"
-elog "Log       : $HOME/.archcosmic_mylog\n"
+elog "Log       : $HOME/.archcosmic\n"
 
 CheckReqs() {
   elog "Checking all requirements..."
