@@ -33,10 +33,13 @@ if [ $? -eq 1 ]; then
   exit 1
 fi
 
+enable_aur=0
+
 if [ -z "$1" ]; then
   repo_type="Chaotic-AUR"
   func_name=COSMICFromCAUR
 elif [ "$1" = "--arch" ]; then
+  enable_aur=1
   repo_type="Arch Linux"
   func_name=COSMICFromArch
 else
@@ -57,7 +60,7 @@ elog "Log       : $HOME/.archcosmic\n"
 CheckReqs() {
   elog "Checking all requirements..."
 
-  which git >/dev/null 2>&1 
+  which git >/dev/null 2>&1
   if [ $? -eq 1 ]; then
     noreq "git"
     sudo pacman -S git --noconfirm | $flog
@@ -74,7 +77,7 @@ CheckReqs() {
     avreq "base-devel"
   fi
 
-  which yay >/dev/null 2>&1   
+  which yay >/dev/null 2>&1
   if [ $? -eq 1 ]; then
     noreq "yay"
     git clone https://aur.archlinux.org/yay.git | $flog
@@ -85,18 +88,20 @@ CheckReqs() {
     avreq "yay"
   fi
 
-  if grep "^\[chaotic-aur\]" /etc/pacman.conf >/dev/null 2>&1; then
-    avreq "chaotic-aur"
-  else
-    noreq "chaotic-aur"
-    sudo pacman-key --recv-key 3056513887B78AEB --keyserver keyserver.ubuntu.com | $flog
-    sudo pacman-key --lsign-key 3056513887B78AEB | $flog
-    sudo pacman -U 'https://cdn-mirror.chaotic.cx/chaotic-aur/chaotic-keyring.pkg.tar.zst' | $flog
-    sudo pacman -U 'https://cdn-mirror.chaotic.cx/chaotic-aur/chaotic-mirrorlist.pkg.tar.zst' | $flog
-    echo -e "[chaotic-aur]\nInclude = /etc/pacman.d/chaotic-mirrorlist" | sudo tee -a /etc/pacman.conf
-    echo -e "[chaotic-aur]\nInclude = /etc/pacman.d/chaotic-mirrorlist" | $flog
-    yay -Syu | $flog
-    ldone
+  if [ $enable_aur -eq 0 ]; then
+    if grep "^\[chaotic-aur\]" /etc/pacman.conf >/dev/null 2>&1; then
+      avreq "chaotic-aur"
+    else
+      noreq "chaotic-aur"
+      sudo pacman-key --recv-key 3056513887B78AEB --keyserver keyserver.ubuntu.com | $flog
+      sudo pacman-key --lsign-key 3056513887B78AEB | $flog
+      sudo pacman -U 'https://cdn-mirror.chaotic.cx/chaotic-aur/chaotic-keyring.pkg.tar.zst' | $flog
+      sudo pacman -U 'https://cdn-mirror.chaotic.cx/chaotic-aur/chaotic-mirrorlist.pkg.tar.zst' | $flog
+      echo -e "[chaotic-aur]\nInclude = /etc/pacman.d/chaotic-mirrorlist" | sudo tee -a /etc/pacman.conf
+      echo -e "[chaotic-aur]\nInclude = /etc/pacman.d/chaotic-mirrorlist" | $flog
+      yay -Syu | $flog
+      ldone
+    fi
   fi
 
   elog "All requirements are met."
