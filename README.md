@@ -49,6 +49,12 @@ script.
 ./install.sh --arch
 ```
 
+## 🤔 What is Chaotic-AUR?
+
+Chaotic-AUR is an automated build repository for AUR packages.
+
+More information: https://aur.chaotic.cx/
+
 ## 🐞 Report Problems
 
   Report the issue by opening a pull request or send me an email to
