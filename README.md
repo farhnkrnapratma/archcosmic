@@ -103,6 +103,10 @@ Report the issue by opening a pull request or send me an email to [farhnkrnaprat
 
 ---
 
+![Repobeats](https://repobeats.axiom.co/api/embed/f772fcdd852d0f86d2586dc3d470bca6704a3960.svg "Repobeats analytics image")
+
+---
+
 ```
 ⚠️ DISCLAIMER OF WARRANTY AND LIABILITY
 
