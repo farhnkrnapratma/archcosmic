@@ -9,19 +9,7 @@ COSMIC aims to liberate the computer with a new desktop environment powerful eno
 This is a script to automate the installation process of the COSMIC desktop
 environment on Arch Linux and its derivatives.
 
-## 📍 Requirements
-
-- ✅ `git` installed
-- ✅ `base-devel` installed
-- ✅ `yay` installed
-- ⏺️ (Optional) `chaotic-aur` repo enabled
-
 ## 🛠️ Installation
-
-> 📖 Note: All COSMIC desktop environment packages are installed from the Chaotic-AUR
-repository. If you want to use the official version from the Arch Linux
-repository, please add the `--arch` argument before running the installation
-script.
 
 ### 1. 🚀 The fastest way: curl
 
@@ -29,12 +17,6 @@ Run the following in your terminal, then follow the onscreen instructions.
 
 ```bash
 curl --proto '=https' --tlsv1.2 -sSf https://raw.githubusercontent.com/farhnkrnapratma/archcosmic/main/install.sh | sh
-```
-
-Or if you want to use the official version from the Arch Linux repo:
-
-```bash
-curl --proto '=https' --tlsv1.2 -sSf https://raw.githubusercontent.com/farhnkrnapratma/archcosmic/main/install.sh | sh -s -- --arch
 ```
 
 ### 2. 📋 Manual Installation
@@ -67,6 +49,14 @@ install.sh: OK
 
 - Verify using `gpg`
 
+Before verifying any signed files, make sure to download the PGP public key first:
+
+```bash
+gpg --keyserver keys.openpgp.org --recv-keys 8A56804F34FF6D2F5F1310257B2BCDEB698FA58C
+```
+
+Once the key is imported, you can verify the signature with:
+
 ```bash
 gpg --verify install.sh.sig install.sh
 ```
@@ -91,21 +81,15 @@ chmod +x install.sh
 ./install.sh
 ```
 
-## 🤔 What is Chaotic-AUR?
-
-Chaotic-AUR is an automated build repository for AUR packages.
-
-> Homepage: <https://aur.chaotic.cx/>
-
 ## 🐞 Report Problems
 
 Report the issue by opening a pull request or send me an email to [farhnkrnapratma@protonmail.com](farhnkrnapratma@protonmail.com)
 
----
+______________________________________________________________________
 
 ![Repobeats](https://repobeats.axiom.co/api/embed/f772fcdd852d0f86d2586dc3d470bca6704a3960.svg "Repobeats analytics image")
 
----
+______________________________________________________________________
 
 ```
 ⚠️ DISCLAIMER OF WARRANTY AND LIABILITY
